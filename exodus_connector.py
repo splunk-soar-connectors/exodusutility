@@ -55,7 +55,7 @@ class ExodusConnector(phantom.BaseConnector):
                 base_url = f'{base_url}/'
             url = f'{base_url}{endpoint}'
             self.__print(url, True)
-            response = requests.get(url, headers=headers, verify=False, timeout=30)
+            response = requests.get(url, headers=headers, verify=False, timeout=30)  # nosemgrep
             content = json.loads(response.text)
             code = response.status_code
             if code == 200:
@@ -90,7 +90,7 @@ class ExodusConnector(phantom.BaseConnector):
             url = f'{base_url}{endpoint}'
             self.__print(url, True)
             data = json.dumps(dictionary)
-            response = requests.post(url, headers=headers, data=data, verify=False, timeout=30)
+            response = requests.post(url, headers=headers, data=data, verify=False, timeout=30)  # nosemgrep
             content = response.text
             code = response.status_code
             if code == 200:
@@ -452,7 +452,7 @@ class ExodusConnector(phantom.BaseConnector):
             filepath = f'/tmp/exported_function_{object_id}.tgz'
         response = None
         try:
-            response = requests.get(file_url, headers=headers, verify=False, timeout=30)
+            response = requests.get(file_url, headers=headers, verify=False, timeout=30)  # nosemgrep
         except Exception as e:
             self.__print(e, False)
         try:
@@ -494,7 +494,7 @@ class ExodusConnector(phantom.BaseConnector):
                 body['playbook'] = str(encoded, 'utf-8')
             else:
                 body['custom_function'] = str(encoded, 'utf-8')
-            resp = requests.post(post_url, json=body, headers=headers, verify=False, timeout=30)
+            resp = requests.post(post_url, json=body, headers=headers, verify=False, timeout=30)  # nosemgrep
             if 199 < resp.status_code < 300:
                 self.__print(f'SUCCESS: {json.loads(resp.text)["message"]}', True)
                 f.close()
