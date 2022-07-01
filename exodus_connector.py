@@ -118,7 +118,7 @@ class ExodusConnector(phantom.BaseConnector):
         return self._post_rest_data(base_url, endpoint, headers, dictionary)
 
     def _post_asset(self, asset):
-        mysession = requests.Session()
+        mysession = requests.Session()  # nosemgrep
         mysession.verify = False
         mysession.headers = self._get_target_headers()
         url = f'{self.get_config()["target_base_url"]}rest/asset'
