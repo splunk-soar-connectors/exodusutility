@@ -11,22 +11,21 @@
     "product_vendor": "Mhike",
     "product_name": "Exodus",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.8.0",
+    "min_phantom_version": "5.2.0",
     "logo": "logo_exodus.svg",
     "logo_dark": "logo_exodus_dark.svg",
     "license": "Copyright (c) Mhike, 2022",
     "python_version": "3",
     "contributors": [
-      {
-        "name": "Mhike"
-      }
+        {
+            "name": "Mhike"
+        }
     ],
     "configuration": {
         "source_base_url": {
             "description": "URL for source Phantom host",
             "data_type": "string",
             "required": true,
-            "value_list": [],
             "default": "https://devphantom.company.com/",
             "order": 0,
             "name": "source_base_url",
@@ -44,8 +43,6 @@
             "description": "Dev Repository ID for source Phantom host",
             "data_type": "string",
             "required": true,
-            "value_list": [],
-            "default": "",
             "order": 2,
             "name": "source_dev_repo_id",
             "id": 2
@@ -53,9 +50,6 @@
         "source_prod_repo_id": {
             "description": "Prod repository ID on source Phantom host",
             "data_type": "string",
-            "required": false,
-            "value_list": [],
-            "default": "",
             "order": 3,
             "name": "source_prod_repo_id",
             "id": 3
@@ -63,9 +57,6 @@
         "source_tenant_id": {
             "description": "Tenant ID on source Phantom host",
             "data_type": "string",
-            "required": false,
-            "value_list": [],
-            "default": "",
             "order": 4,
             "name": "source_tenant_id",
             "id": 4
@@ -74,7 +65,6 @@
             "description": "URL for target phantom host",
             "data_type": "string",
             "required": true,
-            "value_list": [],
             "default": "https://prodphantom.company.com/",
             "order": 5,
             "name": "target_base_url",
@@ -92,8 +82,6 @@
             "description": "Prod repository ID on target Phantom host",
             "data_type": "string",
             "required": true,
-            "value_list": [],
-            "default": "",
             "order": 7,
             "name": "target_repo_id",
             "id": 7
@@ -101,7 +89,6 @@
         "debug": {
             "description": "Print debugging statements to log",
             "data_type": "boolean",
-            "required": false,
             "default": "False",
             "order": 8,
             "name": "debug",
@@ -130,6 +117,18 @@
             "output": [
                 {
                     "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
                     "data_type": "string"
                 },
                 {
@@ -164,5 +163,53 @@
     "appname": "-",
     "executable": "spawn3",
     "disabled": false,
-    "custom_made": true
+    "custom_made": true,
+    "pip_dependencies": {
+        "wheel": [
+            {
+                "module": "certifi",
+                "input_file": "wheels/py3/certifi-2022.6.15-py3-none-any.whl"
+            },
+            {
+                "module": "charset_normalizer",
+                "input_file": "wheels/py3/charset_normalizer-2.0.12-py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/shared/requests-2.27.1-py2.py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/shared/urllib3-1.26.9-py2.py3-none-any.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "certifi",
+                "input_file": "wheels/py3/certifi-2022.6.15-py3-none-any.whl"
+            },
+            {
+                "module": "charset_normalizer",
+                "input_file": "wheels/py3/charset_normalizer-2.1.0-py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/py3/requests-2.28.1-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/shared/urllib3-1.26.9-py2.py3-none-any.whl"
+            }
+        ]
+    }
 }

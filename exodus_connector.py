@@ -55,7 +55,7 @@ class ExodusConnector(phantom.BaseConnector):
                 base_url = f'{base_url}/'
             url = f'{base_url}{endpoint}'
             self.__print(url, True)
-            response = requests.get(url, headers=headers, verify=False)
+            response = requests.get(url, headers=headers, verify=False, timeout=30)
             content = json.loads(response.text)
             code = response.status_code
             if code == 200:
@@ -90,7 +90,7 @@ class ExodusConnector(phantom.BaseConnector):
             url = f'{base_url}{endpoint}'
             self.__print(url, True)
             data = json.dumps(dictionary)
-            response = requests.post(url, headers=headers, data=data, verify=False)
+            response = requests.post(url, headers=headers, data=data, verify=False, timeout=30)
             content = response.text
             code = response.status_code
             if code == 200:
@@ -452,7 +452,7 @@ class ExodusConnector(phantom.BaseConnector):
             filepath = f'/tmp/exported_function_{object_id}.tgz'
         response = None
         try:
-            response = requests.get(file_url, headers=headers, verify=False)
+            response = requests.get(file_url, headers=headers, verify=False, timeout=30)
         except Exception as e:
             self.__print(e, False)
         try:
@@ -494,7 +494,7 @@ class ExodusConnector(phantom.BaseConnector):
                 body['playbook'] = str(encoded, 'utf-8')
             else:
                 body['custom_function'] = str(encoded, 'utf-8')
-            resp = requests.post(post_url, json=body, headers=headers, verify=False)
+            resp = requests.post(post_url, json=body, headers=headers, verify=False, timeout=30)
             if 199 < resp.status_code < 300:
                 self.__print(f'SUCCESS: {json.loads(resp.text)["message"]}', True)
                 f.close()
@@ -553,28 +553,25 @@ class ExodusConnector(phantom.BaseConnector):
         return False
 
     def _handle_test_connectivity(self, param):
-        self.__print('Testing automation user API tokens', False)
+        self.debug_print('Testing automation user API tokens')
         uri = 'rest/scm'
-        self.__print('Testing source token', False)
+        self.debug_print('Testing source token')
         response = self._get_source_rest_data(uri)
-        self.__print(response, True)
         if not response:
             self.set_status(phantom.APP_ERROR)
-            self.__print('Failed to connect. Make sure source token is correct.', False)
+            self.debug_print('Failed to connect. Make sure source token is correct.')
             return phantom.APP_ERROR
-        self.__print('Testing target token', False)
         response = self._get_target_rest_data(uri)
-        self.__print(response, True)
         if not response:
             self.set_status(phantom.APP_ERROR)
-            self.__print('Failed to connect. Make sure target token is correct.', False)
+            self.__print('Failed to connect. Make sure target token is correct.')
             return phantom.APP_ERROR
         self.set_status(phantom.APP_SUCCESS)
-        self.__print('All tokens authenticated properly', False)
+        self.debug_print('All tokens authenticated properly')
         return phantom.APP_SUCCESS
 
     def _handle_add_approval(self, param):
-        self.__print('_add_approval_artifact()', True)
+        self.debug_print('_add_approval_artifact()')
         action_result = self.add_action_result(ActionResult(dict(param)))
         artifact = {
             "cef": {
@@ -588,11 +585,11 @@ class ExodusConnector(phantom.BaseConnector):
         }
         self.save_artifact(artifact)
         action_result.set_status(phantom.APP_SUCCESS)
-        self.__print('Successfully saved artifact', True)
+        self.debug_print('Successfully saved artifact')
         return phantom.APP_SUCCESS
 
     def _handle_on_poll(self):
-        self.__print("polling", True)
+        self.debug_print("polling")
         ignore_playbooks = self._swap_playbook_cache(self.get_config()['source_dev_repo_id'])
         min_function_id = self._swap_function_cache(self.get_config()['source_dev_repo_id'])
         candidate_playbooks = self._get_playbooks(self.get_config()['source_dev_repo_id'], ignore_playbooks)
@@ -606,7 +603,7 @@ class ExodusConnector(phantom.BaseConnector):
                 if not self._does_asset_exist(asset):
                     artifacts.append(self._create_asset_artifact(asset))
             container = self._create_approval_container(artifacts)
-
+        self.debug_print("getting function details")
         candidate_functions = self._get_functions(self.get_config()['source_dev_repo_id'], min_function_id)
         if candidate_functions:
             for candidate in candidate_functions:
