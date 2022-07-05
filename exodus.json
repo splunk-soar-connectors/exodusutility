@@ -114,6 +114,12 @@
             "identifier": "add_approval",
             "read_only": true,
             "parameters": {},
+            "render": {
+                "type": "table",
+                "width": 10,
+                "height": 5,
+                "title": "Add Approval"
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -171,40 +177,16 @@
                 "input_file": "wheels/py3/certifi-2022.6.15-py3-none-any.whl"
             },
             {
-                "module": "charset_normalizer",
-                "input_file": "wheels/py3/charset_normalizer-2.0.12-py3-none-any.whl"
+                "module": "chardet",
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
             },
             {
                 "module": "idna",
-                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
+                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
             },
             {
                 "module": "requests",
-                "input_file": "wheels/shared/requests-2.26.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.9-py2.py3-none-any.whl"
-            }
-        ]
-    },
-    "pip39_dependencies": {
-        "wheel": [
-            {
-                "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.6.15-py3-none-any.whl"
-            },
-            {
-                "module": "charset_normalizer",
-                "input_file": "wheels/py3/charset_normalizer-2.1.0-py3-none-any.whl"
-            },
-            {
-                "module": "idna",
-                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
-            },
-            {
-                "module": "requests",
-                "input_file": "wheels/py3/requests-2.28.1-py3-none-any.whl"
+                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
             },
             {
                 "module": "urllib3",
