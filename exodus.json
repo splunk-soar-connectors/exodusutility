@@ -114,12 +114,6 @@
             "identifier": "add_approval",
             "read_only": true,
             "parameters": {},
-            "render": {
-                "type": "table",
-                "width": 10,
-                "height": 5,
-                "title": "Add Approval"
-            },
             "output": [
                 {
                     "data_path": "action_result.status",
