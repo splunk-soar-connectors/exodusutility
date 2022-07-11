@@ -11,7 +11,7 @@
     "product_vendor": "Mhike",
     "product_name": "Exodus",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.2.0",
+    "min_phantom_version": "4.9.0",
     "logo": "logo_exodus.svg",
     "logo_dark": "logo_exodus_dark.svg",
     "license": "Copyright (c) Mhike, 2022",
