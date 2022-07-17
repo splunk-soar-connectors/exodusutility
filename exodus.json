@@ -5,7 +5,7 @@
     "publisher": "Mhike",
     "type": "devops",
     "main_module": "exodus_connector.py",
-    "app_version": "1.0.0",
+    "app_version": "1.0.1",
     "utctime_updated": "2022-06-13T03:28:42.553440Z",
     "package_name": "phantom_exodus",
     "product_vendor": "Mhike",
