@@ -5,8 +5,8 @@
     "publisher": "Mhike",
     "type": "devops",
     "main_module": "exodus_connector.py",
-    "app_version": "1.0.1",
-    "utctime_updated": "2022-06-13T03:28:42.553440Z",
+    "app_version": "1.0.15",
+    "utctime_updated": "2022-11-09T15:27:09.376463Z",
     "package_name": "phantom_exodus",
     "product_vendor": "Mhike",
     "product_name": "Exodus",
@@ -26,6 +26,7 @@
             "description": "URL for source SOAR host",
             "data_type": "string",
             "required": true,
+            "value_list": [],
             "default": "https://devsoar.company.com/",
             "order": 0,
             "name": "source_base_url",
@@ -43,6 +44,8 @@
             "description": "Dev Repository ID for source SOAR host",
             "data_type": "string",
             "required": true,
+            "value_list": [],
+            "default": "",
             "order": 2,
             "name": "source_dev_repo_id",
             "id": 2
@@ -50,6 +53,9 @@
         "source_prod_repo_id": {
             "description": "Prod repository ID on source SOAR host",
             "data_type": "string",
+            "required": false,
+            "value_list": [],
+            "default": "",
             "order": 3,
             "name": "source_prod_repo_id",
             "id": 3
@@ -57,6 +63,9 @@
         "source_tenant_id": {
             "description": "Tenant ID on source SOAR host",
             "data_type": "string",
+            "required": false,
+            "value_list": [],
+            "default": "",
             "order": 4,
             "name": "source_tenant_id",
             "id": 4
@@ -65,6 +74,7 @@
             "description": "URL for target SOAR host",
             "data_type": "string",
             "required": true,
+            "value_list": [],
             "default": "https://prodsoar.company.com/",
             "order": 5,
             "name": "target_base_url",
@@ -82,17 +92,57 @@
             "description": "Prod repository ID on target SOAR host",
             "data_type": "string",
             "required": true,
+            "value_list": [],
+            "default": "",
             "order": 7,
             "name": "target_repo_id",
             "id": 7
         },
+        "approval_label": {
+            "description": "Label for approval conainers",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "exodus",
+            "order": 8,
+            "name": "approval_label",
+            "id": 8
+        },
+        "migrate_playbooks": {
+            "description": "Enable migration for playbooks",
+            "data_type": "boolean",
+            "required": false,
+            "default": "True",
+            "order": 9,
+            "name": "migrate_playbooks",
+            "id": 9
+        },
+        "migrate_utilities": {
+            "description": "Enable migration for utility functions",
+            "data_type": "boolean",
+            "required": false,
+            "default": "False",
+            "order": 10,
+            "name": "migrate_utilities",
+            "id": 10
+        },
+        "migrate_assets": {
+            "description": "Enable migration for assets",
+            "data_type": "boolean",
+            "required": false,
+            "default": "False",
+            "order": 11,
+            "name": "migrate_assets",
+            "id": 11
+        },
         "debug": {
             "description": "Print debugging statements to log",
             "data_type": "boolean",
+            "required": false,
             "default": "False",
-            "order": 8,
+            "order": 12,
             "name": "debug",
-            "id": 8
+            "id": 12
         }
     },
     "actions": [

@@ -1,11 +1,37 @@
+<style type="text/css">
+	table {
+	  font-family: arial, sans-serif;
+	  border-collapse: collapse;
+
+	}
+
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+</style>
 <h2>Requirements</h2>
 <p>
 Exodus migrates playbooks, custom functions, and assets via Phantom's rest API and uses containers under an <b>exodus</b> label to specify content that is being reviewed for migration. Several things are requires to effectively make this process flow work. You can run exodus from either your dev or your prod instance. The chosen host is where you will configure Exodus assets and "ingestion". Exodus does not technically ingest anything but the ingestion scheduling is used to define the interval time between checks for now content to be migrated<br>
 <h3>API Tokens</h3>
-You will need a Phantom API token for both your dev and your production environment<br>
-Dev Permissions: Playbooks: R, Custom Code: RW, Apps: R, Assets: R<br>
-Prod Permissions: Playbooks: R, Custom Code: RW, Apps: R, Assets: R<br>
-Additional permissions for exodus ingestion host: Container: RW, Assets: W, Playbooks: W
+You will need a Phantom API token for both your dev and your production environment<br><br>
+<table>
+	<tr>
+		<th>Host</th><th>Playbook Access</th><th>Custom Code Access</th><th>App Access</th><th>Asset Access</th><th>Container Access</th>
+	</tr>
+	<tr>
+		<td>Dev/Test</td><td>Read</td><td>Read,Write</td><td>Read</td><td>Read</td><td>Read,Write</td>
+	</tr>
+	<tr>
+		<td>Prod</td><td>Read,Write</td><td>Read,Write</td><td>Read,Write</td><td>Read,Write</td><td>None</td>
+	</tr>
+</table>
+<br>
+The above permissions reflect Exodus running on dev and promoting content to prod.
+<br>
+The inverse is also possible with roughly the same permissions but the asset migration capability will break password fields when pulling to prod.
+
 <br><br>
 <h3>File System</h3>
 During migration, playbook and custom function tarballs are temporarily written to /tmp on the filesystem

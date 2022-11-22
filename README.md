@@ -23,9 +23,11 @@ interval time between checks for now content to be migrated
 ### API Tokens
 
 You will need a Phantom API token for both your dev and your production environment  
-Dev Permissions: Playbooks: R, Custom Code: RW, Apps: R, Assets: R  
-Prod Permissions: Playbooks: R, Custom Code: RW, Apps: R, Assets: R  
-Additional permissions for exodus ingestion host: Container: RW, Assets: W, Playbooks: W  
+Dev Permissions: Playbooks: R, Custom Code: RW, Apps: R, Assets: R, Containers: RW  
+Prod Permissions: Playbooks: RW, Custom Code: RW, Apps: R, Assets: RW, Containers: None  
+The above permissions reflect Exodus running on dev and promoting content to prod.  
+The inverse is also possible with roughly the same permissions but the asset migration capability will break password fields when pulling to prod.  
+
   
 
 ### File System

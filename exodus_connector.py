@@ -11,23 +11,31 @@ from phantom.action_result import ActionResult
 class ExodusConnector(phantom.BaseConnector):
 
     is_polling_action = False
+    _source_base_url = None
+    _source_api_token = None
+    _source_dev_repo_id = None
+    _target_base_url = None
+    _target_api_token = None
+    _target_repo_id = None
+    _approval_label = "exodus"
+    _source_prod_repo_id = None
+    _source_tenant_id = None
+    _migrate_playbooks = True
+    _migrate_utilities = False
+    _migrate_assets = False
+    _debug = False
 
     def __init__(self):
         super(ExodusConnector, self).__init__()
         return
 
     def __print(self, value, is_debug):
-        print_debug = False
-        try:
-            print_debug = self.get_config()['debug']
-        except:
-            pass
         message = 'Failed to cast message to string'
         try:
             message = str(value)
         except:
             pass
-        if is_debug and not print_debug:
+        if is_debug and not self._debug:
             return
         else:
             self.save_progress(message)
@@ -41,11 +49,11 @@ class ExodusConnector(phantom.BaseConnector):
 
     def _get_source_headers(self):
         self.__print('_get_source_headers()', True)
-        return self._get_headers(self.get_config()['source_api_token'])
+        return self._get_headers(self._source_api_token)
 
     def _get_target_headers(self):
         self.__print('_get_target_headers()', True)
-        return self._get_headers(self.get_config()['target_api_token'])
+        return self._get_headers(self._target_api_token)
 
     def _get_rest_data(self, base_url, endpoint, headers):
         self.__print(f'Start: _get_rest_data(): {datetime.datetime.now()}', True)
@@ -71,15 +79,11 @@ class ExodusConnector(phantom.BaseConnector):
 
     def _get_source_rest_data(self, endpoint):
         self.__print(f'Start: _get_source_rest_data(): {datetime.datetime.now()}', True)
-        headers = self._get_source_headers()
-        base_url = self.get_config()['source_base_url']
-        return self._get_rest_data(base_url, endpoint, headers)
+        return self._get_rest_data(self._source_base_url, endpoint, self._get_source_headers())
 
     def _get_target_rest_data(self, endpoint):
         self.__print(f'Start: _get_target_rest_data(): {datetime.datetime.now()}', True)
-        headers = self._get_target_headers()
-        base_url = self.get_config()['target_base_url']
-        return self._get_rest_data(base_url, endpoint, headers)
+        return self._get_rest_data(self._target_base_url, endpoint, self._get_target_headers())
 
     def _post_rest_data(self, base_url, endpoint, headers, dictionary):
         self.__print(f'Start: _post_rest_data(): {datetime.datetime.now()}', True)
@@ -106,34 +110,11 @@ class ExodusConnector(phantom.BaseConnector):
 
     def _post_source_rest_data(self, endpoint, dictionary):
         self.__print(f'Start: _post_source_rest_data(): {datetime.datetime.now()}', True)
-        headers = self._get_source_headers()
-        base_url = self.get_config()['source_base_url']
-        return self._post_rest_data(base_url, endpoint, headers, dictionary)
+        return self._post_rest_data(self._source_base_url, endpoint, self._get_source_headers(), dictionary)
 
     def _post_target_rest_data(self, endpoint, dictionary):
         self.__print(f'Start: _post_target_rest_data(): {datetime.datetime.now()}', True)
-        headers = self._get_target_headers()
-        base_url = self.get_config()['target_base_url']
-        return self._post_rest_data(base_url, endpoint, headers, dictionary)
-
-    def _post_asset(self, asset):
-        mysession = phantom.requests.Session()  # nosemgrep
-        mysession.verify = False
-        mysession.headers = self._get_target_headers()
-        url = f'{self.get_config()["target_base_url"]}rest/asset'
-        mysession.post(url, json=asset)
-
-    def _get_custom_functions(self, repo_id, min_id):
-        self.__print(f'Start: _get_custom_functions(): {datetime.datetime.now()}', True)
-        function_endpoint = ('rest/custom_function'
-                            f'?_filter_scm={repo_id}'
-                            f'&_filter_id__gt={min_id}'
-                             '&_filter_disabled=False'
-                             '&_filter_passed_validation=True'
-                             '&_filter_draft_mode=False')
-        function_data = self._get_source_rest_data(function_endpoint)
-        self.__print(f'Finish: _get_custom_functions(): {datetime.datetime.now()}', True)
-        return function_data
+        return self._post_rest_data(self._target_base_url, endpoint, self._get_target_headers(), dictionary)
 
     def _build_playbook_id_cache(self, playbook_data):
         self.__print(f'Start: _build_playbook_id_cache(): {datetime.datetime.now()}', True)
@@ -142,7 +123,7 @@ class ExodusConnector(phantom.BaseConnector):
           cache.append(playbook['id'])
         return cache
 
-    def _swap_function_cache(self, repo_id):
+    def _swap_function_cache(self):
         self.__print(f'Start: _swap_function_cache(): {datetime.datetime.now()}', True)
         self.load_state()
         current_state = self.get_state()
@@ -152,7 +133,7 @@ class ExodusConnector(phantom.BaseConnector):
         except:
             self.__print('Exception thrown while reading in function cache. Resetting cf states', True)
         function_endpoint = ('rest/custom_function'
-                            f'?_filter_scm={repo_id}'
+                            f'?_filter_scm={self._source_dev_repo_id}'
                              '&page_size=1'
                              '&sort=id'
                              '&order=desc'
@@ -175,7 +156,7 @@ class ExodusConnector(phantom.BaseConnector):
         self.save_state(current_state)
         return watermark
 
-    def _swap_playbook_cache(self, repo_id):
+    def _swap_playbook_cache(self):
         self.__print(f'Start: _swap_playbook_cache(): {datetime.datetime.now()}', True)
         self.load_state()
         current_state = self.get_state()
@@ -185,7 +166,7 @@ class ExodusConnector(phantom.BaseConnector):
         except:
             self.__print('Exception thrown while reading in cache. Resetting app states', True)
         playbook_url = ('rest/playbook'
-                       f'?_filter_scm={repo_id}'
+                       f'?_filter_scm={self._source_dev_repo_id}'
                         '&_filter_tags__contains="prod"'
                         '&page_size=0')
         playbook_data = self._get_source_rest_data(playbook_url)
@@ -196,29 +177,37 @@ class ExodusConnector(phantom.BaseConnector):
         self.save_state(current_state)
         return old_cache
 
-    def _get_functions(self, repo_id, min_function_id):
+    def _get_functions(self, min_function_id):
         self.__print(f'Start: _get_functions(): {datetime.datetime.now()}', True)
-        playbook_endpoint = ('rest/custom_function'
-                            f'?_filter_scm={repo_id}'
-                             '&page_size=0'
-                            f'&_filter_id__gt={min_function_id}'
-                             '&sort=id'
-                             '&order=desc'
-                             '&_filter_disabled=False'
-                             '&_filter_passed_validation=True'
-                             '&_filter_draft_mode=False')
-        function_data = self._get_source_rest_data(playbook_endpoint)
+        if self._migrate_utilities:
+            playbook_endpoint = ('rest/custom_function'
+                                f'?_filter_scm={self._source_dev_repo_id}'
+                                 '&page_size=0'
+                                f'&_filter_id__gt={min_function_id}'
+                                 '&sort=id'
+                                 '&order=desc'
+                                 '&_filter_disabled=False'
+                                 '&_filter_passed_validation=True'
+                                 '&_filter_draft_mode=False'
+                                 '&pretty')
+            function_data = self._get_source_rest_data(playbook_endpoint)
+        else:
+            function_data = []
         self.__print(f'Finish: _get_functions(): {datetime.datetime.now()}', True)
         return function_data
 
-    def _get_playbooks(self, repo_id, ignore_playbooks):
+    def _get_playbooks(self, ignore_playbooks):
         self.__print(f'Start: _get_playbooks(): {datetime.datetime.now()}', True)
-        playbook_endpoint = ('rest/playbook'
-                            f'?_filter_scm={repo_id}'
-                             '&_filter_tags__contains="prod"'
-                            f'&_exclude_id__in={ignore_playbooks}'
-                             '&page_size=0')
-        playbook_data = self._get_source_rest_data(playbook_endpoint)
+        if self._migrate_playbooks:
+            playbook_endpoint = ('rest/playbook'
+                                f'?_filter_scm={self._source_dev_repo_id}'
+                                 '&_filter_tags__contains="prod"'
+                                f'&_exclude_id__in={ignore_playbooks}'
+                                 '&page_size=0'
+                                 '&pretty')
+            playbook_data = self._get_source_rest_data(playbook_endpoint)
+        else:
+            playbook_data = []
         self.__print(f'Finish: _get_playbooks(): {datetime.datetime.now()}', True)
         return playbook_data
 
@@ -227,7 +216,9 @@ class ExodusConnector(phantom.BaseConnector):
         artifact = {
             "cef": {
                 "playbook_name": playbook_json['name'],
-                "playbook_id": playbook_json['id']
+                "playbook_id": playbook_json['id'],
+                "repository_id": playbook_json['scm'],
+                "repository_name": playbook_json['_pretty_scm']
             },
             "label": "playbook",
             "name": playbook_json['name'],
@@ -241,7 +232,9 @@ class ExodusConnector(phantom.BaseConnector):
         artifact = {
             "cef": {
                 "custom_function_name": function_json['name'],
-                "custom_function_id": function_json['id']
+                "custom_function_id": function_json['id'],
+                "repository_id": function_json['scm'],
+                "repository_name": function_json['_pretty_scm']
             },
             "label": "custom_function",
             "name": function_json['name'],
@@ -287,10 +280,21 @@ class ExodusConnector(phantom.BaseConnector):
     def _does_asset_exist(self, asset_name):
         uri = f'rest/asset?_filter_name="{asset_name}"'
         asset_data = self._get_target_rest_data(uri)
-        if asset_data == []:
+        if not asset_data:
             return False
         else:
             return True
+
+    def _get_app_id_for_asset(self, asset_name):
+        uri = f'rest/asset?_filter_name="{asset_name}"&pretty'
+        asset_data = self._get_source_rest_data(uri)
+        if asset_data:
+            app_name = asset_data[0]['_pretty_app']
+            uri = f'rest/app?_filter_name="{app_name}"&pretty'
+            app_data = self._get_source_rest_data(uri)
+            if app_data:
+                return app_data[0]['appid']
+        return None
 
     def _create_asset_artifact(self, asset_name):
         asset_json = self._get_asset_details(asset_name)
@@ -313,14 +317,13 @@ class ExodusConnector(phantom.BaseConnector):
         container = {
             "artifacts": artifacts,
             "data": {},
-            "label": "exodus",
+            "label": self._approval_label,
             "name": "Prod Request",
             "container_type": "default"
         }
         try:
-            tenant = self.get_config()['source_tenant_id']
-            if self.get_config()['source_tenant_id'] is not None:
-                container["tenant_id"] = str(tenant)
+            if self._source_tenant_id:
+                container["tenant_id"] = str(self._source_tenant_id)
         except:
             pass
         self._post_source_rest_data(endpoint, container)
@@ -328,21 +331,16 @@ class ExodusConnector(phantom.BaseConnector):
 
     def _get_unresolved_containers(self):
         self.__print(f'_get_unresolved_containers: {datetime.datetime.now()}', True)
-        tenant = None
-        try:
-            tenant = self.get_config()['source_tenant_id']
-        except:
-            pass
-        if tenant is not None:
+        if self._source_tenant_id:
             endpoint = ('rest/container'
                         '?_exclude_status=3'
-                        '&_filter_label="exodus"'
-                       f'&_filter_tenant={self.get_config()["source_tenant_id"]}'
+                       f'&_filter_label="{self._approval_label}"'
+                       f'&_filter_tenant={self._source_tenant_id}'
                         '&page_size=0')
         else:
             endpoint = ('rest/container'
                         '?_exclude_status=3'
-                        '&_filter_label="exodus"')
+                       f'&_filter_label="{self._approval_label}"')
         containers = self._get_source_rest_data(endpoint)
         return containers
 
@@ -380,6 +378,7 @@ class ExodusConnector(phantom.BaseConnector):
     def _migrate_asset(self, asset_name):
         self.__print(f'_migrate_asset(): {datetime.datetime.now()}', True)
         asset = self._get_asset_details(asset_name)
+        app_id = self._get_app_id_for_asset(asset_name)
         rest_params = [
             "action_whitelist",
             "validation",
@@ -421,6 +420,8 @@ class ExodusConnector(phantom.BaseConnector):
                     new_asset[param] = configuration
                 else:
                     new_asset[param] = asset[param]
+        if "app" in asset and app_id:
+            new_asset['app_guid'] = app_id
         uri = 'rest/asset'
         if self._post_target_rest_data(uri, new_asset):
             return True
@@ -429,9 +430,9 @@ class ExodusConnector(phantom.BaseConnector):
 
     def _update_source_repository(self):
         try:
-            if self.get_config()['source_prod_repo_id']:
+            if self._source_prod_repo_id:
                 self.__print(f'_update_source_repository(): {datetime.datetime.now()}', True)
-                uri = f'rest/scm/{self.get_config()["source_prod_repo_id"]}'
+                uri = f'rest/scm/{self._source_prod_repo_id}'
                 body = {"pull": True, "force": True}
                 self._post_source_rest_data(uri, body)
         except:
@@ -440,7 +441,7 @@ class ExodusConnector(phantom.BaseConnector):
     def _export_tgz(self, type, object_id):
         self.__print(f'_export_tgz(): {datetime.datetime.now()}', True)
         headers = self._get_source_headers()
-        base_url = self.get_config()['source_base_url']
+        base_url = self._source_base_url
         if not base_url.endswith('/'):
             base_url = f'{base_url}/'
         if type == 'playbook':
@@ -459,7 +460,7 @@ class ExodusConnector(phantom.BaseConnector):
             if 199 < response.status_code < 300:
                 if response.content:
                     with open(filepath, 'wb') as output:
-                       output.write(response.content)
+                        output.write(response.content)
                     self.__print(f'Successfully exported to {filepath}', True)
                     return True
                 else:
@@ -475,17 +476,16 @@ class ExodusConnector(phantom.BaseConnector):
     def _import_tgz(self, type, object_id):
         self.__print(f'_import_tgz(): {datetime.datetime.now()}', True)
         headers = self._get_target_headers()
-        base_url = self.get_config()['target_base_url']
+        base_url = self._target_base_url
         if not base_url.endswith('/'):
             base_url = f'{base_url}/'
-        repo = self.get_config()['target_repo_id']
         if type == 'playbook':
             filepath = f'/tmp/exported_playbook_{object_id}.tgz'
             post_url = f'{base_url}rest/import_playbook'
         else:
             filepath = f'/tmp/exported_function_{object_id}.tgz'
             post_url = f'{base_url}rest/import_custom_function'
-        body = {"scm": repo, "force": True}
+        body = {"scm": self._target_repo_id, "force": True}
         f = open(filepath, 'rb')
         try:
             encoded = base64.encodebytes(f.read())
@@ -551,14 +551,14 @@ class ExodusConnector(phantom.BaseConnector):
         response = self._post_source_rest_data(uri, update_data)
         return False
 
-    def _handle_test_connectivity(self, param):
-        self.debug_print('Testing automation user API tokens')
+    def _handle_test_connectivity(self):
+        self.__print('Testing automation user API tokens', False)
         uri = 'rest/scm'
-        self.debug_print('Testing source token')
+        self.__print('Testing source token', False)
         response = self._get_source_rest_data(uri)
         if not response:
             self.set_status(phantom.APP_ERROR)
-            self.debug_print('Failed to connect. Make sure source token is correct.')
+            self.__print('Failed to connect. Make sure source token is correct.', False)
             return phantom.APP_ERROR
         response = self._get_target_rest_data(uri)
         if not response:
@@ -566,11 +566,11 @@ class ExodusConnector(phantom.BaseConnector):
             self.__print('Failed to connect. Make sure target token is correct.')
             return phantom.APP_ERROR
         self.set_status(phantom.APP_SUCCESS)
-        self.debug_print('All tokens authenticated properly')
+        self.__print('All tokens authenticated properly', False)
         return phantom.APP_SUCCESS
 
     def _handle_add_approval(self, param):
-        self.debug_print('_add_approval_artifact()')
+        self.__print('_add_approval_artifact()', True)
         action_result = self.add_action_result(ActionResult(dict(param)))
         artifact = {
             "cef": {
@@ -584,14 +584,14 @@ class ExodusConnector(phantom.BaseConnector):
         }
         self.save_artifact(artifact)
         action_result.set_status(phantom.APP_SUCCESS)
-        self.debug_print('Successfully saved artifact')
+        self.__print('Successfully saved artifact', True)
         return phantom.APP_SUCCESS
 
     def _handle_on_poll(self):
-        self.debug_print("polling")
-        ignore_playbooks = self._swap_playbook_cache(self.get_config()['source_dev_repo_id'])
-        min_function_id = self._swap_function_cache(self.get_config()['source_dev_repo_id'])
-        candidate_playbooks = self._get_playbooks(self.get_config()['source_dev_repo_id'], ignore_playbooks)
+        self.__print("polling", True)
+        ignore_playbooks = self._swap_playbook_cache()
+        min_function_id = self._swap_function_cache()
+        candidate_playbooks = self._get_playbooks(ignore_playbooks)
         for candidate in candidate_playbooks:
             artifacts = []
             artifacts.append(self._create_playbook_artifact(candidate))
@@ -599,11 +599,11 @@ class ExodusConnector(phantom.BaseConnector):
                 if not self._does_app_exist(app):
                     artifacts.append(self._create_app_artifact(app))
             for asset in candidate['metadata']['assets']:
-                if not self._does_asset_exist(asset):
+                if self._migrate_assets and not self._does_asset_exist(asset):
                     artifacts.append(self._create_asset_artifact(asset))
             container = self._create_approval_container(artifacts)
-        self.debug_print("getting function details")
-        candidate_functions = self._get_functions(self.get_config()['source_dev_repo_id'], min_function_id)
+        self.__print("getting function details", True)
+        candidate_functions = self._get_functions(min_function_id)
         if candidate_functions:
             for candidate in candidate_functions:
                 artifacts = []
@@ -612,26 +612,74 @@ class ExodusConnector(phantom.BaseConnector):
 
         for container in self._get_unresolved_containers():
             if self._is_container_approved(container['id']):
-                for asset in self._get_asset_artifacts(container['id']):
-                    if not self._migrate_asset(asset['cef']['asset_name']):
-                        self._add_comment(container['id'], 'Failed to migrate asset. Does it still exist?')
+                skipped = False
                 for playbook in self._get_playbook_artifacts(container['id']):
+                    if int(self._source_dev_repo_id) != int(playbook['cef']['repository_id']):
+                        self.__print('Content is not associated with current asset repository. Skipping', True)
+                        skipped = True
+                        break
                     if not self._migrate_playbook(playbook['cef']['playbook_id']):
                         self._add_comment(container['id'], 'Failed to export playbook. Has it been updated since this request?')
                 for function in self._get_function_artifacts(container['id']):
+                    if int(self._source_dev_repo_id) != int(function['cef']['repository_id']):
+                        self.__print('Content is not associated with current asset repository. Skipping', True)
+                        skipped = True
+                        break
                     if not self._migrate_function(function['cef']['custom_function_id']):
                         self._add_comment(container['id'], 'Failed to export custom function. Has it been updated since this request?')
-                self._resolve_container(container)
+                for asset in self._get_asset_artifacts(container['id']):
+                    if not skipped and not self._migrate_asset(asset['cef']['asset_name']):
+                        self._add_comment(container['id'], 'Failed to migrate asset. Does it still exist?')
+                if not skipped:
+                    self._resolve_container(container)
 
         self.set_status(phantom.APP_SUCCESS)
         return phantom.APP_SUCCESS
 
+    def initialize(self):
+        config = self.get_config()
+        self._source_base_url = config['source_base_url']
+        self._source_api_token = config['source_api_token']
+        self._source_dev_repo_id = config['source_dev_repo_id']
+        self._target_base_url = config['target_base_url']
+        self._target_api_token = config['target_api_token']
+        self._target_repo_id = config['target_repo_id']
+        self._approval_label = config['approval_label']
+        try:
+            self._source_prod_repo_id = config['source_prod_repo_id']
+        except:
+            pass
+        try:
+            self._source_tenant_id = config['source_tenant_id']
+        except:
+            pass
+        try:
+            self._migrate_playbooks = config['migrate_playbooks']
+        except:
+            pass
+        try:
+            self._migrate_utilities = config['migrate_utilities']
+        except:
+            pass
+        try:
+            self._migrate_assets = config['migrate_assets']
+        except:
+            pass
+        try:
+            self._debug = config['debug']
+        except:
+            pass
+        
+        return phantom.APP_SUCCESS
+
+
     def handle_action(self, param):
         self.__print(f'Start: _handle_action(): {datetime.datetime.now()}', True)
+
         action = self.get_action_identifier()
         ret_val = phantom.APP_SUCCESS
         if action == 'test_connectivity':
-            ret_val = self._handle_test_connectivity(param)
+            ret_val = self._handle_test_connectivity()
         if action == 'add_approval':
             ret_val = self._handle_add_approval(param)
         elif action == 'on_poll':
