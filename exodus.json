@@ -14,7 +14,7 @@
     "min_phantom_version": "4.9.0",
     "logo": "logo_exodus.svg",
     "logo_dark": "logo_exodus_dark.svg",
-    "license": "Copyright (c) Mhike, 2022",
+    "license": "Copyright (c) Mhike, 2022-2025",
     "python_version": "3",
     "contributors": [
         {
