@@ -15,7 +15,7 @@
     "logo": "logo_exodus.svg",
     "logo_dark": "logo_exodus_dark.svg",
     "license": "Copyright (c) Mhike, 2022-2025",
-    "python_version": "3",
+    "python_version": ["3.9", "3.13"],
     "contributors": [
         {
             "name": "Mhike"
