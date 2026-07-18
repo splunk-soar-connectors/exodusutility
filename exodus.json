@@ -93,6 +93,12 @@
             "order": 8,
             "name": "debug",
             "id": 8
+        },
+        "verify_server_cert": {
+            "description": "Verify TLS certificates for source and target SOAR hosts. Disable only temporarily for troubleshooting.",
+            "data_type": "boolean",
+            "default": true,
+            "order": 9
         }
     },
     "actions": [
