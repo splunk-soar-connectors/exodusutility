@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Splunk Inc.
+# Copyright (c) 2025-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,9 +66,7 @@ class ExodusConnector(phantom.BaseConnector):
                 base_url = f"{base_url}/"
             url = f"{base_url}{endpoint}"
             self.__print(url, True)
-            response = phantom.requests.get(
-                url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30
-            )
+            response = phantom.requests.get(url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30)
             content = json.loads(response.text)
             code = response.status_code
             if code == 200:
@@ -444,9 +442,7 @@ class ExodusConnector(phantom.BaseConnector):
             filepath = f"/tmp/exported_function_{object_id}.tgz"
         response = None
         try:
-            response = phantom.requests.get(
-                file_url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30
-            )
+            response = phantom.requests.get(file_url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30)
         except Exception as e:
             self.__print(e, False)
         try:
