@@ -1,9 +1,9 @@
 # Exodus
 
-Publisher: Mhike \
-Connector Version: 1.0.1 \
-Product Vendor: Mhike \
-Product Name: Exodus \
+Publisher: Mhike <br>
+Connector Version: 1.0.1 <br>
+Product Vendor: Mhike <br>
+Product Name: Exodus <br>
 Minimum Product Version: 4.9.0
 
 The Exodus app manages various operations used in migrating content from dev to prod
@@ -23,18 +23,19 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **target_api_token** | required | password | API token for target SOAR host |
 **target_repo_id** | required | string | Prod repository ID on target SOAR host |
 **debug** | optional | boolean | Print debugging statements to log |
+**verify_server_cert** | optional | boolean | Verify TLS certificates for source and target SOAR hosts. Disable only temporarily for troubleshooting. |
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied credentials \
-[add approval](#action-add-approval) - Add approval artifact to container \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied credentials <br>
+[add approval](#action-add-approval) - Add approval artifact to container <br>
 [on poll](#action-on-poll) - Execute migration options
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied credentials
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -49,7 +50,7 @@ No Output
 
 Add approval artifact to container
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Add a specifically formatted artifact that is required for the approval process for exodus containers.
@@ -73,7 +74,7 @@ summary.total_objects_successful | numeric | | |
 
 Execute migration options
 
-Type: **ingest** \
+Type: **ingest** <br>
 Read only: **False**
 
 Create required exodus containers and migrate approved content to production system.
@@ -90,7 +91,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

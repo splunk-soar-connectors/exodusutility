@@ -14,8 +14,8 @@
     "min_phantom_version": "4.9.0",
     "logo": "logo_exodus.svg",
     "logo_dark": "logo_exodus_dark.svg",
-    "license": "Copyright (c) Mhike, 2022-2025",
-    "python_version": "3",
+    "license": "Copyright (c) Mhike, 2022-2026",
+    "python_version": "3.9, 3.13",
     "contributors": [
         {
             "name": "Mhike"
@@ -93,6 +93,12 @@
             "order": 8,
             "name": "debug",
             "id": 8
+        },
+        "verify_server_cert": {
+            "description": "Verify TLS certificates for source and target SOAR hosts. Disable only temporarily for troubleshooting.",
+            "data_type": "boolean",
+            "default": true,
+            "order": 9
         }
     },
     "actions": [
@@ -158,10 +164,10 @@
             "versions": "EQ(*)"
         }
     ],
-    "directory": "exodus_7fbd6b83-a9c6-4949-8e09-34bf2c39694d",
-    "version": 1,
-    "appname": "-",
-    "executable": "spawn3",
-    "disabled": false,
-    "custom_made": true
+    "pip39_dependencies": {
+        "wheel": []
+    },
+    "pip313_dependencies": {
+        "wheel": []
+    }
 }

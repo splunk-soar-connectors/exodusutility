@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Splunk Inc.
+# Copyright (c) 2025-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class ExodusConnector(phantom.BaseConnector):
                 base_url = f"{base_url}/"
             url = f"{base_url}{endpoint}"
             self.__print(url, True)
-            response = phantom.requests.get(url, headers=headers, verify=False, timeout=30)  # nosemgrep
+            response = phantom.requests.get(url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30)
             content = json.loads(response.text)
             code = response.status_code
             if code == 200:
@@ -101,7 +101,9 @@ class ExodusConnector(phantom.BaseConnector):
             url = f"{base_url}{endpoint}"
             self.__print(url, True)
             data = json.dumps(dictionary)
-            response = phantom.requests.post(url, headers=headers, data=data, verify=False, timeout=30)  # nosemgrep
+            response = phantom.requests.post(
+                url, headers=headers, data=data, verify=self.get_config().get("verify_server_cert", True), timeout=30
+            )
             content = response.text
             code = response.status_code
             if code == 200:
@@ -129,8 +131,8 @@ class ExodusConnector(phantom.BaseConnector):
         return self._post_rest_data(base_url, endpoint, headers, dictionary)
 
     def _post_asset(self, asset):
-        mysession = phantom.requests.Session()  # nosemgrep
-        mysession.verify = False
+        mysession = phantom.requests.Session()
+        mysession.verify = self.get_config().get("verify_server_cert", True)
         mysession.headers = self._get_target_headers()
         url = f"{self.get_config()['target_base_url']}rest/asset"
         mysession.post(url, json=asset)
@@ -440,7 +442,7 @@ class ExodusConnector(phantom.BaseConnector):
             filepath = f"/tmp/exported_function_{object_id}.tgz"
         response = None
         try:
-            response = phantom.requests.get(file_url, headers=headers, verify=False, timeout=30)  # nosemgrep
+            response = phantom.requests.get(file_url, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30)
         except Exception as e:
             self.__print(e, False)
         try:
@@ -482,7 +484,9 @@ class ExodusConnector(phantom.BaseConnector):
                 body["playbook"] = str(encoded, "utf-8")
             else:
                 body["custom_function"] = str(encoded, "utf-8")
-            resp = phantom.requests.post(post_url, json=body, headers=headers, verify=False, timeout=30)  # nosemgrep
+            resp = phantom.requests.post(
+                post_url, json=body, headers=headers, verify=self.get_config().get("verify_server_cert", True), timeout=30
+            )
             if 199 < resp.status_code < 300:
                 self.__print(f"SUCCESS: {json.loads(resp.text)['message']}", True)
                 f.close()
