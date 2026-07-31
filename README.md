@@ -1,7 +1,7 @@
 # Exodus
 
 Publisher: Mhike <br>
-Connector Version: 1.0.1 <br>
+Connector Version: 2.0.0 <br>
 Product Vendor: Mhike <br>
 Product Name: Exodus <br>
 Minimum Product Version: 4.9.0
