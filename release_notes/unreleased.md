@@ -1,1 +1,3 @@
 **Unreleased**
+
+* Enable TLS certificate verification for source and target SOAR hosts by default.
