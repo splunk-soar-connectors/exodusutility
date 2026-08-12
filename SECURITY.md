@@ -38,20 +38,20 @@ Deploy Exodus only when all of the following controls are in place:
 
 1. Restrict connector installation, asset creation and editing, ingestion, and
    migration approval to a dedicated trusted administrator or migration role.
-2. Prevent Asset Owners and other untrusted users from modifying the Exodus asset,
+1. Prevent Asset Owners and other untrusted users from modifying the Exodus asset,
    triggering its ingestion, or approving its migration containers.
-3. Constrain source and target connectivity to explicitly approved SOAR hosts with
+1. Constrain source and target connectivity to explicitly approved SOAR hosts with
    firewall, proxy, or other network policy. Do not rely only on user-editable URL
    fields as a trust boundary.
-4. Keep `verify_server_cert` enabled and use certificates trusted by the host
+1. Keep `verify_server_cert` enabled and use certificates trusted by the host
    running Exodus.
-5. Use separate, narrowly scoped API tokens for source and target operations.
+1. Use separate, narrowly scoped API tokens for source and target operations.
    Store and rotate them according to the organization's credential policy.
-6. Restrict access to the `exodus` label and protect any playbook that creates or
+1. Restrict access to the `exodus` label and protect any playbook that creates or
    approves migration requests from unauthorized modification.
-7. Avoid logging asset configuration data. Restrict access to connector logs,
+1. Avoid logging asset configuration data. Restrict access to connector logs,
    diagnostics, process memory, and the host filesystem.
-8. Monitor migrations and configuration changes. Rotate API tokens and migrated
+1. Monitor migrations and configuration changes. Rotate API tokens and migrated
    credentials after any suspected endpoint redirection, unauthorized migration,
    or host compromise.
 
