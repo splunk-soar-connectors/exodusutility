@@ -13,6 +13,28 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<h2>Support and security notice</h2>
+<p>
+  <strong>Exodus is a community-maintained connector. It is not developed, maintained, or officially supported by Splunk.</strong>
+</p>
+<p>
+  Asset migration can decrypt password-typed configuration values on the SOAR host running Exodus and transmit the plaintext values to the configured target SOAR REST endpoint. By enabling asset migration, operators accept this behavior and are responsible for protecting the migration path.
+</p>
+<ul>
+  <li>
+    Restrict installation, configuration, ingestion, and migration approval to a dedicated trusted administrator role.
+  </li>
+  <li>
+    Allow only approved source and target SOAR hosts through network policy; do not permit user-controlled migration endpoints.
+  </li>
+  <li>
+    Use narrowly scoped API tokens, protect the Exodus asset configuration, and rotate tokens and migrated credentials after suspected exposure.
+  </li>
+  <li>Keep server-certificate verification enabled and use certificates trusted by the host running Exodus.</li>
+  <li>
+    Do not use asset migration when Asset Owners or other untrusted users can edit the Exodus asset, trigger ingestion, influence source responses, or redirect the target endpoint.
+  </li>
+</ul>
 <h2>Requirements</h2>
 <p>
   Exodus migrates playbooks, custom functions, and assets via Phantom's rest API and uses containers under an <b>exodus</b> label to specify content that is being reviewed for migration. Several things are requires to effectively make this process flow work. You can run exodus from either your dev or your prod instance. The chosen host is where you will configure Exodus assets and "ingestion". Exodus does not technically ingest anything but the ingestion scheduling is used to define the interval time between checks for now content to be migrated
